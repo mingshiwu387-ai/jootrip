@@ -92,7 +92,7 @@ function initJooTripSearch() {
     const item = JOOTRIP_DATABASE.find(x => x.id === itemId);
     if (!item) return;
     const badgeBg = item.category === '美食' ? '#f59e0b' : (item.category === '住宿' ? '#3b82f6' : '#0d9488');
-    const mapUrl = buildQueryUrl('google.com', '/maps/search/', { api: '1', query: item.city + ' ' + item.name });
+    const mapUrl = buildQueryUrl('www.google.com', '/maps/search/', { api: '1', query: item.city + ' ' + item.name });
 
     let modal = document.getElementById('jootrip-detail-modal');
     if (!modal) {
@@ -141,6 +141,13 @@ function initJooTripSearch() {
     const mapLink = el('a', { textAlign: 'center', background: '#f1f5f9', color: '#0f172a', textDecoration: 'none', padding: '12px', borderRadius: '12px', fontSize: '14px', fontWeight: 'bold', display: 'block' }, '📍 Google 地圖導航');
     mapLink.href = mapUrl;
     mapLink.target = '_blank';
+    mapLink.rel = 'noopener noreferrer';
+    mapLink.onclick = function(e) {
+      e.preventDefault();
+      window.open(mapUrl, '_blank', 'noopener,noreferrer');
+    };
+
+
 
     const addBtn = el('button', { background: '#0d9488', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer' }, '+ 加入我的行程');
     addBtn.onclick = () => { alert('✅ 已將「' + item.name + '」加入你們的共編行程！'); modal.style.display = 'none'; };
