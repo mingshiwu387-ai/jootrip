@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>揪趣 JooTrip｜旅行不獨行，揪趣一起行！</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d9488">
+
+    <script>
+        var host = "https://gstatic.com";
+        var path = "/firebasejs/10.8.0/";
+        document.write('<scr' + 'ipt src="' + host + path + 'firebase-app-compat.js"></scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + host + path + 'firebase-firestore-compat.js"></scr' + 'ipt>');
+    </script>
+</head>
+<body>
+
+
+
+
+<div class="app-shell">
+    <header class="app-topbar">
+        <div class="brand-title">
+            <span class="brand-icon">✈️</span>
+            <span>揪趣 JooTrip</span>
+        </div>
+        <span id="db-status" class="status-pill">☁️ 連線中...</span>
+    </header>
+
+    <section id="page-home" class="app-page active">
+
+	
+	        <!-- 揪趣 JooTrip 首頁大資料庫與視覺推播牆 -->
+        <div style="width: 100%; box-sizing: border-box; padding: 12px 14px 8px 14px;">
+          <!-- 1. 放大版搜尋框 -->
+          <div style="position: relative; display: flex; align-items: center; background: #ffffff; border: 2px solid #0d9488; border-radius: 14px; padding: 10px 14px; box-shadow: 0 4px 12px rgba(13,148,136,0.12);">
+            <span style="font-size: 18px; margin-right: 8px;">🔍</span>
+            <input id="jootrip-search-input" type="text" placeholder="搜景點、美食、住宿或注意事項..." style="border: none; outline: none; width: 100%; font-size: 15px; color: #1e293b; background: transparent;">
+            <button id="jootrip-search-clear" onclick="runJooTripSearch('')" style="display: none; background: #e2e8f0; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 13px; cursor: pointer; color: #475569;">✕</button>
+          </div>
+
+          <!-- 2. 加大加寬「地區」快選按鈕列（台灣六都+彰化、日韓） -->
+          <div style="display: flex; gap: 8px; overflow-x: auto; padding: 10px 2px 6px 2px; scrollbar-width: none;">
+            <button class="jt-city-btn" data-city="全部" onclick="setJooTripCity('全部')" style="white-space:nowrap; background:#0d9488; color:#ffffff; border:1.5px solid #0d9488; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">🌏 全部</button>
+            <button class="jt-city-btn" data-city="彰化" onclick="setJooTripCity('彰化')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 彰化</button>
+            <button class="jt-city-btn" data-city="台中" onclick="setJooTripCity('台中')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 台中</button>
+            <button class="jt-city-btn" data-city="台北" onclick="setJooTripCity('台北')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 台北</button>
+            <button class="jt-city-btn" data-city="新北" onclick="setJooTripCity('新北')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 新北</button>
+            <button class="jt-city-btn" data-city="桃園" onclick="setJooTripCity('桃園')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 桃園</button>
+            <button class="jt-city-btn" data-city="台南" onclick="setJooTripCity('台南')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 台南</button>
+            <button class="jt-city-btn" data-city="高雄" onclick="setJooTripCity('高雄')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">📍 高雄</button>
+            <button class="jt-city-btn" data-city="東京" onclick="setJooTripCity('東京')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">🇯🇵 東京</button>
+            <button class="jt-city-btn" data-city="大阪" onclick="setJooTripCity('大阪')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">🇯🇵 大阪</button>
+            <button class="jt-city-btn" data-city="沖繩" onclick="setJooTripCity('沖繩')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">🇯🇵 沖繩</button>
+            <button class="jt-city-btn" data-city="首爾" onclick="setJooTripCity('首爾')" style="white-space:nowrap; background:#ffffff; color:#334155; border:1.5px solid #cbd5e1; border-radius:22px; padding:8px 15px; font-size:14px; font-weight:bold; cursor:pointer;">🇰🇷 首爾</button>
+          </div>
+
+          <!-- 3. 主題分類大按鈕（景點 / 美食 / 住宿） -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 0 10px 0;">
+            <button class="jt-cat-btn" data-cat="全部" onclick="setJooTripCat('全部')" style="background:#f59e0b; color:#ffffff; border:none; border-radius:10px; padding:9px 4px; font-size:13.5px; font-weight:bold; cursor:pointer;">🔥 全部</button>
+            <button class="jt-cat-btn" data-cat="景點" onclick="setJooTripCat('景點')" style="background:#f1f5f9; color:#475569; border:none; border-radius:10px; padding:9px 4px; font-size:13.5px; font-weight:bold; cursor:pointer;">🏞️ 景點</button>
+            <button class="jt-cat-btn" data-cat="美食" onclick="setJooTripCat('美食')" style="background:#f1f5f9; color:#475569; border:none; border-radius:10px; padding:9px 4px; font-size:13.5px; font-weight:bold; cursor:pointer;">🍜 美食</button>
+            <button class="jt-cat-btn" data-cat="住宿" onclick="setJooTripCat('住宿')" style="background:#f1f5f9; color:#475569; border:none; border-radius:10px; padding:9px 4px; font-size:13.5px; font-weight:bold; cursor:pointer;">🏨 住宿</button>
+          </div>
+
+          <!-- 4. 常駐前往「去趣 / Agoda」外部大平台快捷列 -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <a href="https://chictrip.com.tw" target="_blank" style="display:flex; align-items:center; justify-content:center; background:#f0fdfa; color:#0f766e; border:1px solid #99f6e4; text-decoration:none; padding:10px 8px; border-radius:12px; font-size:13px; font-weight:bold;">🗺️ 前往去趣看攻略 ↗</a>
+            <a id="jootrip-agoda-link" href="https://agoda.com" target="_blank" style="display:flex; align-items:center; justify-content:center; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; text-decoration:none; padding:10px 8px; border-radius:12px; font-size:13px; font-weight:bold;">🏨 前往 Agoda 搜房價 ↗</a>
+          </div>
+
+          <!-- 5. 近期熱門雙欄圖文探索牆（預設直接展開顯示） -->
+          <div id="jootrip-search-results" style="margin-top: 4px;"></div>
+        </div>
+
+
+        <div class="hero-card">
+            <div class="hero-overlay">
+                <span class="hero-tag">✨ AI 智慧共編旅遊</span>
+		<h1>旅行不獨行，<br>揪趣一起行！</h1>
+		<p>與旅伴一起，從靈感、投票到預算分攤更簡單</p>
+            </div>
+        </div>
+
+        <div class="quick-grid">
+            <div class="quick-card" onclick="goToPage('page-ai')">
+                <div class="q-icon bg-mint">✨</div>
+                <h3>AI 生成行程</h3>
+                <p>快速產生專屬旅程</p>
+            </div>
+            <div class="quick-card" onclick="goToPage('page-trip')">
+                <div class="q-icon bg-blue">📅</div>
+                <h3>我的旅程</h3>
+                <p>管理與協調編輯行程</p>
+            </div>
+            <div class="quick-card" onclick="goToPage('page-vote')">
+                <div class="q-icon bg-pink">❤️</div>
+                <h3>景點投票</h3>
+                <p>滑卡決定去哪玩</p>
+            </div>
+            <div class="quick-card" onclick="goToPage('page-trip')">
+                <div class="q-icon bg-amber">💰</div>
+                <h3>預算分攤</h3>
+                <p>精算花費與跟團比價</p>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h3>進行中的旅程</h3>
+            <span class="link-text" onclick="goToPage('page-trip')">查看全部 &gt;</span>
+        </div>
+        <div class="active-trip-card" onclick="goToPage('page-trip')">
+            <div class="trip-thumb">🗾</div>
+            <div class="trip-meta">
+                <h4 id="home-trip-title">日本東京 2 日遊</h4>
+                <p id="home-trip-sub">👥 4 位旅伴 • 雲端即時共編中</p>
+                <div class="avatar-row">
+                    <span class="avatar">👩</span>
+                    <span class="avatar">👨</span>
+                    <span class="avatar">🧑</span>
+                    <span class="avatar-count">+1</span>
+                </div>
+            </div>
+            <button class="btn-lime-sm">繼續編輯 →</button>
+        </div>
+    </section>
+
+    <section id="page-ai" class="app-page">
+        <div class="page-nav-header">
+            <button class="back-btn" onclick="goToPage('page-home')">‹</button>
+            <h2>AI 生成行程</h2>
+            <span class="badge-ai">AI 規劃</span>
+        </div>
+        <p class="page-hint">告訴我們您的旅行想法，AI 會為您規劃完整且聰明的行程！</p>
+
+        <div class="form-card-list">
+            <div class="form-row-item">
+                <span class="row-icon">📍</span>
+                <div class="row-content">
+                    <label>目的地（國家 / 城市）</label>
+                    <input type="text" id="dest-city" value="日本東京" placeholder="例如：日本東京、韓國首爾">
+                </div>
+            </div>
+            <div class="form-row-item">
+                <span class="row-icon">🗓️</span>
+                <div class="row-content">
+                    <label>旅遊天數與出發步調</label>
+                    <div class="inline-selects">
+                        <select id="trip-days">
+                            <option value="1">1 天（一日遊）</option>
+                            <option value="2" selected>2 天（輕旅行）</option>
+                            <option value="3">3 天（深度遊）</option>
+                        </select>
+                        <select id="start-time">
+                            <option value="8">08:00 早鳥出發</option>
+                            <option value="9" selected>09:00 標準出發</option>
+                            <option value="10">10:00 睡飽悠閒</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row-item">
+                <span class="row-icon">👥</span>
+                <div class="row-content">
+                    <label>同行人數（人）</label>
+                    <input type="number" id="people-count" value="4" min="1">
+                </div>
+            </div>
+            <div class="form-row-item">
+                <span class="row-icon">💰</span>
+                <div class="row-content">
+                    <label>每人預期預算上限（NT$）</label>
+                    <input type="number" id="budget-limit" value="15000">
+                </div>
+            </div>
+            <div class="form-row-item">
+                <span class="row-icon">🎨</span>
+                <div class="row-content">
+                    <label>旅遊風格偏好</label>
+                    <select id="trip-style">
+                        <option value="culture">文化建築與打卡</option>
+                        <option value="nature">自然風景與慢活</option>
+                        <option value="food">美食小吃與逛街</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-lime-full" onclick="generatePrecisionSchedule()">✨ 一鍵生成行程</button>
+
+        <div id="ai-result-panel" style="display: none; margin-top: 18px;">
+            <div id="budget-alert-box" class="alert-box"></div>
+
+            <div class="ai-negotiator-box">
+                <div class="ai-negotiator-header">
+                    💬 <strong>AI 行程協調顧問</strong>（不滿意？直接跟我商量調整！）
+                </div>
+                <div id="ai-chat-history" class="ai-chat-history"></div>
+                <div class="ai-quick-chips">
+                    <button class="chip-btn" onclick="quickNegotiate('預算超支了，幫我壓低費用')">💰 幫我省錢</button>
+                    <button class="chip-btn" onclick="quickNegotiate('行程太趕了，幫我排輕鬆一點')">🐢 排輕鬆點</button>
+                    <button class="chip-btn" onclick="quickNegotiate('想多加一點美食餐廳')">🍜 多排美食</button>
+                    <button class="chip-btn" onclick="quickNegotiate('幫我升級成豪華享受團')">👑 升級豪華</button>
+                </div>
+                <div class="ai-chat-input-bar">
+                    <input type="text" id="ai-user-input" placeholder="輸入需求（如：太貴了、想去迪士尼...）" onkeypress="if(event.key==='Enter') sendNegotiation()">
+                    <button class="btn-teal-sm" onclick="sendNegotiation()">協調</button>
+                </div>
+            </div>
+
+            <button class="btn-teal-full" onclick="goToPage('page-trip')">查看完整時間軸與分攤明細 →</button>
+        </div>
+    </section>
+
+    <section id="page-vote" class="app-page">
+        <div class="page-nav-header">
+            <button class="back-btn" onclick="goToPage('page-home')">‹</button>
+            <h2>景點投票</h2>
+            <span id="vote-badge" class="badge-green">❤️ 雲端同步</span>
+        </div>
+        <p class="page-hint">與旅伴一起決定想去的景點！（最高票自動排入 Day 1）</p>
+
+        <div id="swipe-card-container" class="swipe-card">
+            <div class="swipe-visual">
+                <span class="swipe-like-tag">❤️ 喜歡</span>
+                <div class="swipe-emoji">⛩️</div>
+                <div class="swipe-info-overlay">
+                    <h3 id="swipe-title">載入中...</h3>
+                    <p id="swipe-desc">正在讀取雲端景點資料...</p>
+                    <div class="swipe-tags">
+                        <span class="tag-pill">熱門地標</span>
+                        <span class="tag-pill" id="swipe-votes-pill">目前 0 票</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-controls">
+            <button class="circle-btn btn-skip" onclick="nextSwipeCard()" title="跳過下一個">✕</button>
+            <span id="swipe-counter" class="swipe-counter">1 / 3</span>
+            <button class="circle-btn btn-heart" onclick="likeCurrentSwipeCard()" title="喜歡投一票">❤️</button>
+        </div>
+
+        <div class="add-spot-card">
+            <h4>➕ 推薦新景點給旅伴投票</h4>
+            <input type="text" id="new-spot-name" placeholder="景點名稱（例如：大阪環球影城）">
+            <input type="text" id="new-spot-desc" placeholder="特色說明（例如：必玩瑪利歐園區）">
+            <button class="btn-teal-full" onclick="addNewSpot()">加入雲端投票池</button>
+        </div>
+    </section>
+
+    <section id="page-trip" class="app-page">
+        <div class="page-nav-header">
+            <button class="back-btn" onclick="goToPage('page-home')">‹</button>
+            <h2 id="trip-overview-title">日本東京 2 日遊</h2>
+            <span class="badge-live">● 共同編輯中</span>
+        </div>
+
+        <div class="sub-tabs">
+            <button id="sub-tab-schedule" class="sub-tab active" onclick="switchTripSubTab('schedule')">行程總覽</button>
+            <button id="sub-tab-budget" class="sub-tab" onclick="switchTripSubTab('budget')">預算分攤</button>
+            <button id="sub-tab-b2c" class="sub-tab" onclick="switchTripSubTab('b2c')">跟團比價</button>
+        </div>
+
+        <div class="emergency-strip">
+            <span>⚡ 突發應變：</span>
+            <button class="pill-rain" onclick="triggerRainPlan()">☔ 下大雨備案</button>
+            <button class="pill-angry" onclick="triggerAngryRescue()">🤬 旅伴暴怒安撫</button>
+        </div>
+        <div id="emergency-alert" class="emergency-result" style="display: none;"></div>
+
+        <div id="trip-sub-schedule">
+            <div id="day-pills-bar" class="day-pills"></div>
+            <div id="timeline-container">
+                <div class="empty-state">
+                    <p>尚未生成行程，請先點擊下方按鈕讓 AI 為您排程！</p>
+                    <button class="btn-lime-full" onclick="goToPage('page-ai')">✨ 前往 AI 生成行程</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="trip-sub-budget" style="display: none;">
+	            <div class="budget-split-card">
+                <h4>旅遊預算與分攤明細</h4>
+                <div class="split-3-col">
+                    <div class="split-box">
+                        <span class="split-label">🧮 全團總預算</span>
+                        <strong id="split-total-budget">NT$ 60,000</strong>
+                    </div>
+                    <div class="split-box">
+                        <span class="split-label">💸 預估總花費</span>
+                        <strong id="split-total-spent" class="text-teal">NT$ 0</strong>
+                    </div>
+                    <div class="split-box">
+                        <span class="split-label">👤 每人分攤</span>
+                        <strong id="split-per-person" class="text-orange">NT$ 0</strong>
+                    </div>
+                </div>
+            </div>
+            <div id="compare-box" class="compare-card"></div>
+        </div>
+
+        <div id="trip-sub-b2c" style="display: none;">
+            <p class="page-hint">不想自己排交通？以下為旅行社雲端即時同步的套裝方案：</p>
+            <div id="b2c-package-list" class="pkg-list"></div>
+        </div>
+    </section>
+
+    <section id="page-b2b" class="app-page">
+        <div class="page-nav-header">
+            <button class="back-btn" onclick="goToPage('page-home')">‹</button>
+            <h2>旅行社管理後台 (B2B)</h2>
+            <span class="badge-green">雲端同步</span>
+        </div>
+
+        <div class="add-spot-card">
+            <h4>➕ 建立並發布新套裝方案</h4>
+            <input type="text" id="pkg-title" placeholder="方案名稱（例如：韓國首爾美食四日遊）">
+            <div class="inline-selects">
+                <input type="number" id="pkg-cost" placeholder="預估成本 (元/人)" oninput="calcProfit()">
+                <input type="number" id="pkg-price" placeholder="對外售價 (元/人)" oninput="calcProfit()">
+            </div>
+            <input type="text" id="pkg-desc" placeholder="行程亮點（含機票、市區飯店、中文導遊）">
+            <div class="profit-bar">
+                <span>預估每人毛利：<strong id="pkg-profit">$ 0</strong></span>
+                <button class="btn-teal-sm" onclick="publishPackage()">🚀 發布上架</button>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h3>已發布的雲端方案</h3>
+        </div>
+        <div id="b2b-package-list" class="pkg-list"></div>
+    </section>
+
+    <nav class="bottom-nav">
+        <button id="nav-page-home" class="nav-item active" onclick="goToPage('page-home')">
+            <span class="nav-icon">🏠</span>
+            <span>首頁</span>
+        </button>
+        <button id="nav-page-trip" class="nav-item" onclick="goToPage('page-trip')">
+            <span class="nav-icon">📅</span>
+            <span>旅程</span>
+        </button>
+        <button id="nav-page-ai" class="nav-center-btn" onclick="goToPage('page-ai')" title="AI 生成行程">
+            ✨
+        </button>
+        <button id="nav-page-vote" class="nav-item" onclick="goToPage('page-vote')">
+            <span class="nav-icon">❤️</span>
+            <span>投票</span>
+        </button>
+        <button id="nav-page-b2b" class="nav-item" onclick="goToPage('page-b2b')">
+            <span class="nav-icon">🏢</span>
+            <span>旅行社</span>
+        </button>
+    </nav>
+</div>
+
+<script src="script.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+</script>
+
+<script src="database.js"></script>
+
+</body>
+</html>
