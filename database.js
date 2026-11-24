@@ -39,12 +39,13 @@ function el(tag, styles, text) {
 }
 
 function buildQueryUrl(host, path, params) {
-  const url = new URL('https:' + '//' + host);
-  url.pathname = path;
+  let qs = '';
   if (params) {
-    Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+    qs = Object.keys(params)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+      .join('&');
   }
-  return url.toString();
+  return 'https:' + '//' + host + path + (qs ? '?' + qs : '');
 }
 
 function attachSmartPhoto(imgEl, itemId) {
