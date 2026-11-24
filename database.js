@@ -179,7 +179,7 @@ function initJooTripSearch() {
 
     const targetTerm = q || (currentCityFilter !== '全部' ? currentCityFilter : '熱門旅遊');
     if (agodaQuickLink) {
-      agodaQuickLink.href = buildQueryUrl('://agoda.com', '/zh-tw/search', { text: targetTerm });
+      agodaQuickLink.href = buildQueryUrl('www.agoda.com', '/zh-tw/search', { text: targetTerm });
       agodaQuickLink.textContent = '🏨 前往 Agoda 搜「' + targetTerm + '」房價 ↗';
     }
 
