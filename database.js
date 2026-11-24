@@ -92,7 +92,7 @@ function initJooTripSearch() {
     const item = JOOTRIP_DATABASE.find(x => x.id === itemId);
     if (!item) return;
     const badgeBg = item.category === '美食' ? '#f59e0b' : (item.category === '住宿' ? '#3b82f6' : '#0d9488');
-    const mapUrl = buildQueryUrl('://google.com', '/', { q: item.city + ' ' + item.name });
+    const mapUrl = buildQueryUrl('google.com', '/maps/search/', { api: '1', query: item.city + ' ' + item.name });
 
     let modal = document.getElementById('jootrip-detail-modal');
     if (!modal) {
