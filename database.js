@@ -144,7 +144,12 @@ function initJooTripSearch() {
     mapLink.rel = 'noopener noreferrer';
     mapLink.onclick = function(e) {
       e.preventDefault();
-      window.open(mapUrl, '_blank', 'noopener,noreferrer');
+      // 嘗試開新分頁
+      const newWin = window.open(mapUrl, '_blank', 'noopener,noreferrer');
+      // 如果被環境封鎖（導致 newWin 為 null 或被攔截），改在最外層視窗直接開啟
+      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        window.top.location.href = mapUrl;
+      }
     };
 
 
