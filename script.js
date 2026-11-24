@@ -421,32 +421,75 @@ box.style.display = "block";
 box.innerHTML = '🤬 旅伴安撫救援：已鎖定 200 公尺內冷氣強、有沙發的 4.6 星咖啡廳，建議立即入座冷卻情緒 2 分鐘並休息 40 分鐘！';
 }
 function renderPackagesUI() {
-var b2cListEl = document.getElementById('b2c-package-list');
-var b2bListEl = document.getElementById('b2b-package-list');
-if (!b2cListEl || !b2bListEl) return;
-b2cListEl.innerHTML = "";
-b2bListEl.innerHTML = "";
-globalPackages.forEach(function(data) {
-b2cListEl.innerHTML +=
-'' +
-'旅行社認證' +
-'' + data.title + '' +
-'' + data.desc + '' +
-'跟團直購價：NT$ ' + data.price + ' / 人' +
-'';
-b2bListEl.innerHTML +=
-'' +
-'' + data.title + '' +
-'' + data.desc + '' +
-'對外售價：NT$ ' + data.price + ' / 人' +
-'';
-});
+    var b2cListEl = document.getElementById('b2c-package-list');
+    var b2bListEl = document.getElementById('b2b-package-list');
+    if (!b2cListEl || !b2bListEl) return;
+    b2cListEl.innerHTML = "";
+    b2bListEl.innerHTML = "";
+    globalPackages.forEach(function(data) {
+        b2cListEl.innerHTML +=
+            '<div class="pkg-item-card">' +
+                '<span class="badge-green">旅行社認證</span>' +
+                '<h4 style="margin:6px 0 4px 0;">' + data.title + '</h4>' +
+                '<p style="color:#64748b;margin-bottom:6px;">' + data.desc + '</p>' +
+                '<strong style="color:#0d9488;">跟團直購價：NT$ ' + Number(data.price || 0).toLocaleString() + ' / 人</strong>' +
+            '</div>';
+        b2bListEl.innerHTML +=
+            '<div class="pkg-item-card">' +
+                '<h4 style="margin:0 0 4px 0;">' + data.title + '</h4>' +
+                '<p style="color:#64748b;margin-bottom:6px;">' + data.desc + '</p>' +
+                '<strong style="color:#0f172a;">對外售價：NT$ ' + Number(data.price || 0).toLocaleString() + ' / 人</strong>' +
+            '</div>';
+    });
 }
-function calcProfit() {
-var cost = parseFloat(document.getElementById('pkg-cost').value) || 0;
-var price = parseFloat(document.getElementById('pkg-price').value) || 0;
-document.getElementById('pkg-profit').innerText = "$ " + (price - cost);
-}
+
+window.addSpotToCurrentSchedule = function(spotObj) {
+    if (!spotObj) return;
+    if (!currentScheduleState.daysData || currentScheduleState.daysData.length === 0) {
+        var days = parseInt(document.getElementById('trip-days') && document.getElementById('trip-days').value, 10) || 2;
+        var budgetLimit = parseFloat(document.getElementById('budget-limit') && document.getElementById('budget-limit').value) || 15000;
+        var people = parseInt(document.getElementById('people-count') && document.getElementById('people-count').value, 10) || 4;
+        var cityInput = (document.getElementById('dest-city') && document.getElementById('dest-city').value.trim()) || currentCity || "日本東京";
+        currentCity = spotObj.city || cityInput;
+        var builtDays = [];
+        for (var d = 1; d <= days; d++) {
+            builtDays.push({
+                day: d,
+                items: [],
+                hotelCost: d < days ? (budgetLimit <= 2000 ? 0 : 2200) : 0
+            });
+        }
+        currentScheduleState = {
+            daysData: builtDays,
+            baseTransport: budgetLimit <= 1000 ? 50 : (budgetLimit <= 3000 ? 300 : 3500),
+            budgetLimit: budgetLimit,
+            people: people,
+            totalCostPerPerson: 0
+        };
+    }
+
+    var targetDay = currentScheduleState.daysData[0];
+    var idx = targetDay.items.length;
+    var baseHour = parseInt(document.getElementById('start-time') && document.getElementById('start-time').value, 10) || 9;
+    var slotHour = baseHour + idx * 2;
+    var timeStr = (slotHour % 24 < 10 ? "0" + (slotHour % 24) : (slotHour % 24)) + ":00";
+    var costVal = Number(spotObj.price) || 0;
+
+    targetDay.items.push({
+        time: timeStr,
+        title: "📌 " + (spotObj.city ? spotObj.city + "｜" : "") + spotObj.name,
+        desc: spotObj.desc || "由首頁探索清單加入的行程景點。",
+        transit: "🗺️ 依地圖順路前往",
+        cost: costVal
+    });
+
+    selectedDayFilter = 1;
+    document.getElementById('home-trip-title').innerText = currentCity + " " + currentScheduleState.daysData.length + " 日遊";
+    document.getElementById('home-trip-sub').innerText = "👥 " + currentScheduleState.people + " 位旅伴 • 已加入「" + spotObj.name + "」";
+    document.getElementById('trip-overview-title').innerText = currentCity + " " + currentScheduleState.daysData.length + " 日遊";
+    renderScheduleAndBudget(false);
+    alert('✅ 已將「' + spotObj.name + '」加入 Day 1 行程並重算費用！可到「旅程」頁查看。');
+};
 function publishPackage() {
 var title = document.getElementById('pkg-title').value.trim();
 var price = parseFloat(document.getElementById('pkg-price').value);

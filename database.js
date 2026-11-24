@@ -60,6 +60,7 @@ function attachSmartPhoto(imgEl, itemId) {
     }
   };
 }
+
 function initJooTripSearch() {
   const input = document.getElementById('jootrip-search-input');
   const resultsBox = document.getElementById('jootrip-search-results');
@@ -144,18 +145,18 @@ function initJooTripSearch() {
     mapLink.rel = 'noopener noreferrer';
     mapLink.onclick = function(e) {
       e.preventDefault();
-      // 嘗試開新分頁
-      const newWin = window.open(mapUrl, '_blank', 'noopener,noreferrer');
-      // 如果被環境封鎖（導致 newWin 為 null 或被攔截），改在最外層視窗直接開啟
-      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-        window.top.location.href = mapUrl;
-      }
+      window.location.assign(mapUrl);
     };
 
-
-
     const addBtn = el('button', { background: '#0d9488', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer' }, '+ 加入我的行程');
-    addBtn.onclick = () => { alert('✅ 已將「' + item.name + '」加入你們的共編行程！'); modal.style.display = 'none'; };
+    addBtn.onclick = () => {
+      if (typeof window.addSpotToCurrentSchedule === 'function') {
+        window.addSpotToCurrentSchedule(item);
+      } else {
+        alert('✅ 已將「' + item.name + '」加入你們的共編行程！');
+      }
+      modal.style.display = 'none';
+    };
 
     btnGrid.appendChild(mapLink);
     btnGrid.appendChild(addBtn);
@@ -172,6 +173,7 @@ function initJooTripSearch() {
     box.appendChild(body);
     modal.appendChild(box);
   };
+
   window.runJooTripSearch = function(keyword) {
     if (keyword !== undefined) input.value = keyword;
     const q = input.value.trim();
@@ -221,7 +223,14 @@ function initJooTripSearch() {
         const bottomPart = el('div', { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #f1f5f9' });
         bottomPart.appendChild(el('span', { fontSize: '12px', fontWeight: 'bold', color: '#0d9488' }, item.price === 0 ? '免費' : 'NT$' + item.price));
         const addBtn = el('button', { background: '#0d9488', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }, '+ 加入');
-        addBtn.onclick = (e) => { e.stopPropagation(); alert('✅ 已將「' + item.name + '」加入你們的共編行程清單！'); };
+        addBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (typeof window.addSpotToCurrentSchedule === 'function') {
+            window.addSpotToCurrentSchedule(item);
+          } else {
+            alert('✅ 已將「' + item.name + '」加入你們的共編行程清單！');
+          }
+        };
         bottomPart.appendChild(addBtn);
 
         info.appendChild(topPart);
@@ -230,7 +239,7 @@ function initJooTripSearch() {
         card.appendChild(info);
         grid.appendChild(card);
       });
-      
+
       resultsBox.appendChild(grid);
     } else if (q) {
       const loadingTip = el('div', { textAlign: 'center', padding: '20px', color: '#0d9488', fontSize: '13.5px', fontWeight: 'bold' }, '🌐 正在從維基百科全球資料庫搜尋「' + q + '」...');
@@ -306,7 +315,14 @@ function initJooTripSearch() {
               const bottomPart = el('div', { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #f1f5f9' });
               bottomPart.appendChild(el('span', { fontSize: '11px', fontWeight: 'bold', color: '#0284c7' }, '維基百科資料'));
               const addBtn = el('button', { background: '#0d9488', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }, '+ 加入');
-              addBtn.onclick = (e) => { e.stopPropagation(); alert('✅ 已將「' + p.title + '」加入你們的共編行程清單！'); };
+              addBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (typeof window.addSpotToCurrentSchedule === 'function') {
+                  window.addSpotToCurrentSchedule(wikiItem);
+                } else {
+                  alert('✅ 已將「' + p.title + '」加入你們的共編行程清單！');
+                }
+              };
               bottomPart.appendChild(addBtn);
 
               info.appendChild(topPart);
@@ -322,7 +338,7 @@ function initJooTripSearch() {
           });
       }, 450);
     }
- };
+  };
 
   input.addEventListener('input', () => window.runJooTripSearch());
   window.runJooTripSearch();
