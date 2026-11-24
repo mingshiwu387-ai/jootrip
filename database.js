@@ -218,13 +218,9 @@ function initJooTripSearch() {
         card.appendChild(info);
         grid.appendChild(card);
       });
+      
       resultsBox.appendChild(grid);
-    } else {
-  resultsBox.appendChild(el('div', { textAlign: 'center', padding: '20px 10px', background: '#fff', borderRadius: '12px', color: '#64748b', fontSize: '13px' }, '找不到符合「' + q + '」的精選卡片，請點擊上方按鈕前往外部網站搜尋！'));
-}
-
-  };
-      } else {
+    } else if (q) {
       const loadingTip = el('div', { textAlign: 'center', padding: '20px', color: '#0d9488', fontSize: '13.5px', fontWeight: 'bold' }, '🌐 正在從維基百科全球資料庫搜尋「' + q + '」...');
       resultsBox.appendChild(loadingTip);
 
@@ -314,6 +310,7 @@ function initJooTripSearch() {
           });
       }, 450);
     }
+ };
 
   input.addEventListener('input', () => window.runJooTripSearch());
   window.runJooTripSearch();
